@@ -484,7 +484,7 @@ tx_ultimate_touch:
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_release", "Release Position: %d / State: %d", touch.x, touch.state);
 
-  on_swipe_up:
+  on_swipe_left:
     - script.execute: led_on_swipe_up
 
     - switch.turn_on: vibra
@@ -496,7 +496,7 @@ tx_ultimate_touch:
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_swipe_up", "Swipe Up Position: %d / State: %d", touch.x, touch.state);
 
-  on_swipe_down:
+  on_swipe_right:
     - script.execute: led_on_swipe_down
 
     - switch.turn_on: vibra
@@ -534,11 +534,6 @@ tx_ultimate_touch:
 
 time:
   - platform: homeassistant
-
-sun:
-  latitude: ${latitude}
-  longitude: ${longitude}
-
 
 script:
   - id: refresh_nightlight
