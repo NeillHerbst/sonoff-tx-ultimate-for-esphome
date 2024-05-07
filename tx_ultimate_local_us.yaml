@@ -535,10 +535,6 @@ tx_ultimate_touch:
 time:
   - platform: homeassistant
 
-sun:
-  latitude: ${latitude}
-  longitude: ${longitude}
-
 
 script:
   - id: refresh_nightlight
