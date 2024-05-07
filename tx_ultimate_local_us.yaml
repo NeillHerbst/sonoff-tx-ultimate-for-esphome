@@ -17,8 +17,8 @@ substitutions:
   nightlight_brightness: "0.15"
   nightlight_color: "{255,255,209}"
 
-  latitude: "50.123456°"
-  longitude: "5.654321°"
+  latitude: "-26.703°"
+  longitude: "27.808°"
 
   touch_brightness: "1"
   touch_color: "{0,255,255}"
