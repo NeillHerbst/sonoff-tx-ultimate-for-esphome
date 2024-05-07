@@ -117,7 +117,7 @@ globals:
   - id: button_off_color
     type: int [3]
     restore_value: no
-    initial_value: ${button_color}
+    initial_value: ${button_off_color}
   - id: button_color
     type: int [3]
     restore_value: no
