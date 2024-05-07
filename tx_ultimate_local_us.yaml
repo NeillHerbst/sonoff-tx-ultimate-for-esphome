@@ -307,7 +307,6 @@ switch:
   - platform: template
     name: "Nightlight"
     id: nightlight
-    internal: true
     optimistic: true
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
@@ -317,17 +316,17 @@ switch:
       then:
         - script.execute: refresh_led_default
 
-  - platform: template
-    name: "Nightlight"
-    id: nightlight_active
-    optimistic: true
-    restore_mode: RESTORE_DEFAULT_OFF
-    on_turn_on:
-      then:
-        - script.execute: refresh_led_default
-    on_turn_off:
-      then:
-        - script.execute: refresh_led_default
+  # - platform: template
+  #   name: "Nightlight"
+  #   id: nightlight_active
+  #   optimistic: true
+  #   restore_mode: RESTORE_DEFAULT_OFF
+  #   on_turn_on:
+  #     then:
+  #       - script.execute: refresh_led_default
+  #   on_turn_off:
+  #     then:
+  #       - script.execute: refresh_led_default
 
   - platform: restart
     name: "${friendly_name} Restart"
@@ -533,12 +532,12 @@ tx_ultimate_touch:
 time:
   - platform: homeassistant
   - platform: sntp
-    on_time:
-      # Every 5 minutes
-      - seconds: 0
-        minutes: /5
-        then:
-          - script.execute: refresh_nightlight
+    # on_time:
+    #   # Every 5 minutes
+    #   - seconds: 0
+    #     minutes: /5
+    #     then:
+    #       - script.execute: refresh_nightlight
 
 sun:
   latitude: ${latitude}
@@ -568,16 +567,16 @@ script:
     then:
       - if:
           condition:
-            lambda: "return id(nightlight).state || id(nightlight_active).state;"
+            lambda: "return id(nightlight).state"
           then:
-            - light.turn_on: 
-                id: leds_top
-                brightness: ${nightlight_brightness}
-                effect: "None"
+            # - light.turn_on: 
+            #     id: leds_top
+            #     brightness: ${nightlight_brightness}
+            #     effect: "None"
             - script.execute: led_on_nightlight
           else:
-            - light.turn_off: 
-                id: leds_top
+            # - light.turn_off: 
+            #     id: leds_top
             - light.turn_off: leds_nightlight
 
       - if:
