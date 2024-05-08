@@ -535,7 +535,6 @@ tx_ultimate_touch:
 time:
   - platform: homeassistant
 
-
 script:
   - id: refresh_nightlight
     mode: restart
