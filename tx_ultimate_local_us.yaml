@@ -96,7 +96,7 @@ esphome:
           id: long_press
           state: OFF
       - script.execute: refresh_led_default
-      - script.execute: refresh_nightlight
+      # - script.execute: refresh_nightlight
 
 
 external_components:
@@ -108,7 +108,6 @@ external_components:
     components: [tx_ultimate_touch]
     
 
-# Global Variables
 globals:
   - id: nightlight_color
     type: int [3]
@@ -371,7 +370,7 @@ light:
   # partition for lights on button 2  
   - platform: partition
     name: "LEDs Button 2"
-    id: led_button_2
+    id: leds_button_2
     internal: true
     segments:
       - id: leds
@@ -536,29 +535,29 @@ time:
   - platform: homeassistant
 
 script:
-  - id: refresh_nightlight
-    mode: restart
-    then:
-      - if:
-          condition:
-            lambda: 'return "${nightlight}" == "on";'
-          then:
-            - if:
-                condition:
-                  - sun.is_below_horizon:
-                then:
-                  - switch.turn_on:
-                      id: nightlight
-                else:
-                  - switch.turn_off:
-                      id: nightlight
+  # - id: refresh_nightlight
+  #   mode: restart
+  #   then:
+  #     - if:
+  #         condition:
+  #           lambda: 'return "${nightlight}" == "on";'
+  #         then:
+  #           - if:
+  #               condition:
+  #                 - sun.is_below_horizon:
+  #               then:
+  #                 - switch.turn_on:
+  #                     id: nightlight
+  #               else:
+  #                 - switch.turn_off:
+  #                     id: nightlight
 
   - id: refresh_led_default
     mode: restart
     then:
       - if:
           condition:
-            lambda: "return id(nightlight).state"
+            lambda: "return id(nightlight).state;"
           then:
             # - light.turn_on: 
             #     id: leds_top
@@ -627,7 +626,7 @@ script:
     mode: restart
     then:
       - light.turn_on:
-          id: led_button_2
+          id: leds_button_2
           brightness: ${button_brightness}
           red: !lambda "return id(button_color)[0]/255.0;"
           green: !lambda "return id(button_color)[1]/255.0;"
@@ -669,14 +668,14 @@ script:
             lambda: "return id(nightlight).state;"
           then:
             - light.turn_on:
-                id: led_button_3
+                id: leds_button_3
                 brightness: ${button_off_brightness}
                 red: !lambda "return id(button_off_color)[0]/255.0;"
                 green: !lambda "return id(button_off_color)[1]/255.0;"
                 blue:  !lambda "return id(button_off_color)[2]/255.0;"
           else:
             - light.turn_off:
-                id: led_button_3
+                id: leds_button_3
 
 
   - id: led_off_button_2
@@ -944,3 +943,4 @@ script:
                                   blue: 1
                         - delay: 1s
                         - light.turn_off: leds
+
