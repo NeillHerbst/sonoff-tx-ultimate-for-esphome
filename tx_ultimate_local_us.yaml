@@ -150,6 +150,7 @@ binary_sensor:
   - platform: template
     name: "Touchfield 1"
     id: touchfield_1
+    icon: "mdi:gesture-touch"
     on_press:
       - switch.toggle: relay_1
       - delay: ${button_on_time}
@@ -161,6 +162,7 @@ binary_sensor:
   - platform: template
     name: "Touchfield 2"
     id: touchfield_2
+    icon: "mdi:gesture-touch"
     on_press:
       - switch.toggle: relay_2
       - delay: ${button_on_time}
@@ -172,6 +174,7 @@ binary_sensor:
   - platform: template
     name: "Touchfield 3"
     id: touchfield_3
+    icon: "mdi:gesture-touch"
     on_press:
       - switch.toggle: relay_3
       - delay: ${button_on_time}
@@ -183,6 +186,7 @@ binary_sensor:
   - platform: template
     name: "Touchfield 4"
     id: touchfield_4
+    icon: "mdi:gesture-touch"
     on_press:
       - switch.toggle: relay_4
       - delay: ${button_on_time}
@@ -373,10 +377,6 @@ light:
           name: "Pulse"
           transition_length: 1.4s
           update_interval: 1s
-
-    # on_turn_off:
-    #   then:
-    #     - script.execute: refresh_led_default
 
   # partitions for lights on button 1
   - platform: partition
