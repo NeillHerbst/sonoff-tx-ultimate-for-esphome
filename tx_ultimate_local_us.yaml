@@ -316,21 +316,6 @@ switch:
     internal: true
     restore_mode: RESTORE_DEFAULT_ON
     
-  # switch for nightlight  
-  # - platform: template
-  #   name: "Nightlight"
-  #   id: nightlight
-  #   optimistic: true
-  #   restore_mode: RESTORE_DEFAULT_OFF
-  #   on_turn_on:
-  #     then:
-  #       - script.execute: refresh_led_default
-  #   on_turn_off:
-  #     then:
-  #       - script.execute: refresh_led_default
-  # - platform: restart
-  #   name: "${friendly_name} Restart"
-  
   - platform: template
     name: "Do Not Disturb"
     optimistic: True
@@ -351,10 +336,10 @@ select:
     optimistic: True
     restore_value: True
     options:
-      - left
-      - right
-      - both
-    initial_option: right
+      - Left
+      - Right
+      - Both
+    initial_option: Right
   
   - platform: template
     name: "LED Off Side"
@@ -392,60 +377,88 @@ light:
     # on_turn_off:
     #   then:
     #     - script.execute: refresh_led_default
-  # partition for lights on button 1
+
+  # partitions for lights on button 1
   - platform: partition
-    name: "LEDs Button 1"
-    id: leds_button_1
+    name: "LEDs Button 1 Left"
+    id: leds_button_1_left
     internal: true
     default_transition_length: 0.2s
-      
     segments:
       - id: leds
         from: 23
         to: 23
+  - platform: partition
+    name: "LEDs Button 1 Right"
+    id: leds_button_1_right
+    internal: true
+    default_transition_length: 0.2s
+    segments:
       - id: leds
         from: 0
         to: 0
+
   
-  # partition for lights on button 2  
+  # partitions for lights on button 2  
   - platform: partition
-    name: "LEDs Button 2"
-    id: leds_button_2
+    name: "LEDs Button 2 Left"
+    id: leds_button_2_left
+    internal: true
+    default_transition_length: 0.2s
+    segments:
+      - id: leds
+        from: 21
+        to: 21
+  - platform: partition
+    name: "LEDs Button 2 Right"
+    id: leds_button_2_right
     internal: true
     default_transition_length: 0.2s
     segments:
       - id: leds
         from: 2
         to: 2
-      - id: leds
-        from: 21
-        to: 21
+
   # partition for lights on button 3
   - platform: partition
-    name: "LEDs Button 3"
-    id: leds_button_3
+    name: "LEDs Button 3 Left"
+    id: leds_button_3_left
+    internal: true
+    default_transition_length: 0.2s
+    segments:
+      - id: leds
+        from: 19
+        to: 19
+  - platform: partition
+    name: "LEDs Button 3 Right"
+    id: leds_button_3_right
     internal: true
     default_transition_length: 0.2s
     segments:
       - id: leds
         from: 4
         to: 4
-      - id: leds
-        from: 19
-        to: 19
+
   # partition for lights on button 4
   - platform: partition
-    name: "LEDs Button 4"
-    id: leds_button_4
+    name: "LEDs Button 4 Left"
+    id: leds_button_4_left
     internal: true
     default_transition_length: 0.2s
     segments:
       - id: leds
         from: 17
         to: 17
+  - platform: partition
+    name: "LEDs Button 4 Right"
+    id: leds_button_4_right
+    internal: true
+    default_transition_length: 0.2s
+    segments:
       - id: leds
         from: 6
         to: 6
+
   # Partition for night light
   - platform: partition
     name: "Nightlight"
@@ -633,46 +646,167 @@ script:
             - script.execute: led_off_button_4
   
 
-  - id: led_on_button_4
+  - id: led_on_button_1
     mode: restart
     then:
-      - light.turn_on:
-          id: leds_button_4
-          brightness: ${button_brightness}
-          red: !lambda "return id(button_color)[0]/255.0;"
-          green: !lambda "return id(button_color)[1]/255.0;"
-          blue:  !lambda "return id(button_color)[2]/255.0;"
-
-  - id: led_on_button_3
-    mode: restart
-    then:
-      - light.turn_on:
-          id: leds_button_3
-          brightness: ${button_brightness}
-          red: !lambda "return id(button_color)[0]/255.0;"
-          green: !lambda "return id(button_color)[1]/255.0;"
-          blue:  !lambda "return id(button_color)[2]/255.0;"
+      - if:
+          condition: # on lights Both option selected
+            - lambda: 'return id(led_lights_on_side).state == "Both";'
+          then:
+            - light.turn_on:
+                id: leds_button_1_left
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
+            - light.turn_on:
+                id: leds_button_1_right
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
+      - if:
+          condition: # on lights Left option selected
+            - lambda: 'return id(led_lights_on_side).state == "Left";'
+          then:
+            - light.turn_on:
+                id: leds_button_1_left
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
+      - if:
+          condition: # on lights Right option selected
+            - lambda: 'return id(led_lights_on_side).state == "Right";'
+          then:
+            - light.turn_on:
+                id: leds_button_1_right
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
 
   - id: led_on_button_2
     mode: restart
     then:
-      - light.turn_on:
-          id: leds_button_2
-          brightness: ${button_brightness}
-          red: !lambda "return id(button_color)[0]/255.0;"
-          green: !lambda "return id(button_color)[1]/255.0;"
-          blue:  !lambda "return id(button_color)[2]/255.0;"
+      - if:
+          condition: # on lights Both option selected
+            - lambda: 'return id(led_lights_on_side).state == "Both";'
+          then:
+            - light.turn_on:
+                id: leds_button_2_left
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
+            - light.turn_on:
+                id: leds_button_2_right
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
+      - if:
+          condition: # on lights Left option selected
+            - lambda: 'return id(led_lights_on_side).state == "Left";'
+          then:
+            - light.turn_on:
+                id: leds_button_2_left
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
+      - if:
+          condition: # on lights Right option selected
+            - lambda: 'return id(led_lights_on_side).state == "Right";'
+          then:
+            - light.turn_on:
+                id: leds_button_2_right
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
 
-  - id: led_on_button_1
+
+  - id: led_on_button_3
     mode: restart
     then:
-      - light.turn_on:
-          id: leds_button_1
-          brightness: ${button_brightness}
-          red: !lambda "return id(button_color)[0]/255.0;"
-          green: !lambda "return id(button_color)[1]/255.0;"
-          blue:  !lambda "return id(button_color)[2]/255.0;"
+      - if:
+          condition: # on lights Both option selected
+            - lambda: 'return id(led_lights_on_side).state == "Both";'
+          then:
+            - light.turn_on:
+                id: leds_button_3_left
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
+            - light.turn_on:
+                id: leds_button_3_right
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
+      - if:
+          condition: # on lights Left option selected
+            - lambda: 'return id(led_lights_on_side).state == "Left";'
+          then:
+            - light.turn_on:
+                id: leds_button_3_left
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
+      - if:
+          condition: # on lights Right option selected
+            - lambda: 'return id(led_lights_on_side).state == "Right";'
+          then:
+            - light.turn_on:
+                id: leds_button_3_right
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
 
+
+  - id: led_on_button_4
+    mode: restart
+    then:
+      - if:
+          condition: # on lights Both option selected
+            - lambda: 'return id(led_lights_on_side).state == "Both";'
+          then:
+            - light.turn_on:
+                id: leds_button_4_left
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
+            - light.turn_on:
+                id: leds_button_4_right
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
+      - if:
+          condition: # on lights Left option selected
+            - lambda: 'return id(led_lights_on_side).state == "Left";'
+          then:
+            - light.turn_on:
+                id: leds_button_4_left
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
+      - if:
+          condition: # on lights Right option selected
+            - lambda: 'return id(led_lights_on_side).state == "Right";'
+          then:
+            - light.turn_on:
+                id: leds_button_4_right
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/255.0;"
+                green: !lambda "return id(button_color)[1]/255.0;"
+                blue:  !lambda "return id(button_color)[2]/255.0;"
 
   - id: led_off_button_1
     mode: restart
@@ -681,33 +815,48 @@ script:
           condition:
             - switch.is_off: do_not_disturb
           then:
-             - light.turn_on:
-                 id: leds_button_1
-                 brightness: ${button_off_brightness}
-                 red: !lambda "return id(button_off_color)[0]/255.0;"
-                 green: !lambda "return id(button_off_color)[1]/255.0;"
-                 blue:  !lambda "return id(button_off_color)[2]/255.0;"
+            - if:
+                condition: # off lights Both option selected
+                  - lambda: 'return id(led_lights_off_side).state == "Both";'
+                then:
+                  - light.turn_on:
+                      id: leds_button_1_left
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
+                  - light.turn_on:
+                      id: leds_button_1_right
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
+            - if:
+                condition: # off lights Left option selected
+                  - lambda: 'return id(led_lights_off_side).state == "Left";'
+                then:
+                  - light.turn_on:
+                      id: leds_button_1_left
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
+            - if:
+                condition: # off lights Right option selected
+                  - lambda: 'return id(led_lights_off_side).state == "Right";'
+                then:
+                  - light.turn_on:
+                      id: leds_button_1_right
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
+
           else:
             - light.turn_off:
-                id: leds_button_1
-
-  - id: led_off_button_3
-    mode: restart
-    then:
-      - if:
-          condition:
-            - switch.is_off: do_not_disturb
-          then:
-            - light.turn_on:
-                id: leds_button_3
-                brightness: ${button_off_brightness}
-                red: !lambda "return id(button_off_color)[0]/255.0;"
-                green: !lambda "return id(button_off_color)[1]/255.0;"
-                blue:  !lambda "return id(button_off_color)[2]/255.0;"
-          else:
+                id: leds_button_1_left
             - light.turn_off:
-                id: leds_button_3
-
+                id: leds_button_1_right
 
   - id: led_off_button_2
     mode: restart
@@ -716,15 +865,97 @@ script:
           condition:
             - switch.is_off: do_not_disturb
           then:
-            - light.turn_on:
-                id: leds_button_2
-                brightness: ${button_off_brightness}
-                red: !lambda "return id(button_off_color)[0]/255.0;"
-                green: !lambda "return id(button_off_color)[1]/255.0;"
-                blue:  !lambda "return id(button_off_color)[2]/255.0;"
+            - if:
+                condition: # off lights Both option selected
+                  - lambda: 'return id(led_lights_off_side).state == "Both";'
+                then:
+                  - light.turn_on:
+                      id: leds_button_2_left
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
+                  - light.turn_on:
+                      id: leds_button_2_right
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
+            - if:
+                condition: # off lights Left option selected
+                  - lambda: 'return id(led_lights_off_side).state == "Left";'
+                then:
+                  - light.turn_on:
+                      id: leds_button_2_left
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
+            - if:
+                condition: # off lights Right option selected
+                  - lambda: 'return id(led_lights_off_side).state == "Right";'
+                then:
+                  - light.turn_on:
+                      id: leds_button_2_right
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
           else:
             - light.turn_off:
-                id: leds_button_2
+                id: leds_button_2_left
+            - light.turn_off:
+                id: leds_button_2_right
+
+
+  - id: led_off_button_3
+    mode: restart
+    then:
+      - if:
+          condition:
+            - switch.is_off: do_not_disturb
+          then:
+            - if:
+                condition: # off lights Both option selected
+                  - lambda: 'return id(led_lights_off_side).state == "Both";'
+                then:
+                  - light.turn_on:
+                      id: leds_button_3_left
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
+                  - light.turn_on:
+                      id: leds_button_3_right
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
+            - if:
+                condition: # off lights Left option selected
+                  - lambda: 'return id(led_lights_off_side).state == "Left";'
+                then:
+                  - light.turn_on:
+                      id: leds_button_3_left
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
+            - if:
+                condition: # off lights Right option selected
+                  - lambda: 'return id(led_lights_off_side).state == "Right";'
+                then:
+                  - light.turn_on:
+                      id: leds_button_3_right
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
+          else:
+            - light.turn_off:
+                id: leds_button_3_left
+            - light.turn_off:
+                id: leds_button_3_right
   
   - id: led_off_button_4
     mode: restart
@@ -733,15 +964,47 @@ script:
           condition:
             - switch.is_off: do_not_disturb
           then:
-            - light.turn_on:
-                id: leds_button_4
-                brightness: ${button_off_brightness}
-                red: !lambda "return id(button_off_color)[0]/255.0;"
-                green: !lambda "return id(button_off_color)[1]/255.0;"
-                blue:  !lambda "return id(button_off_color)[2]/255.0;"
+            - if:
+                condition: # off lights Both option selected
+                  - lambda: 'return id(led_lights_off_side).state == "Both";'
+                then:
+                  - light.turn_on:
+                      id: leds_button_4_left
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
+                  - light.turn_on:
+                      id: leds_button_4_right
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
+            - if:
+                condition: # off lights Left option selected
+                  - lambda: 'return id(led_lights_off_side).state == "Left";'
+                then:
+                  - light.turn_on:
+                      id: leds_button_4_left
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
+            - if:
+                condition: # off lights Right option selected
+                  - lambda: 'return id(led_lights_off_side).state == "Right";'
+                then:
+                  - light.turn_on:
+                      id: leds_button_4_right
+                      brightness: ${button_brightness}
+                      red: !lambda "return id(button_off_color)[0]/255.0;"
+                      green: !lambda "return id(button_off_color)[1]/255.0;"
+                      blue:  !lambda "return id(button_off_color)[2]/255.0;"
           else:
             - light.turn_off:
-                id: leds_button_4
+                id: leds_button_4_left
+            - light.turn_off:
+                id: leds_button_4_right
 
 
   - id: led_on_nightlight
