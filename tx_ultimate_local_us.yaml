@@ -381,6 +381,9 @@ select:
       - Both
     initial_option: Both
     entity_category: "config"
+    on_value: 
+      then:
+        - script.execute: refresh_led_default
   
   - platform: template
     name: "LED Off Side"
@@ -393,6 +396,9 @@ select:
       - Both
     initial_option: Both
     entity_category: "config"
+    on_value: 
+      then:
+        - script.execute: refresh_led_default
 # ==============================================================================================================
 #                                           LIGHTS
 # ==============================================================================================================
