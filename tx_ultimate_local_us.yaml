@@ -142,6 +142,36 @@ globals:
     restore_value: no
     initial_value: ${touch_color}    
 
+# ===============================================================================================
+#                                Numbers
+# ===============================================================================================
+
+number:
+  - platform: template
+    name: "LED On Brightness"
+    id: button_on_brightness
+    min_value: 1
+    max_value: 100
+    initial_value: 15
+    step: 1
+    optimistic: True
+    restore_value: True
+    unit_of_measurement: "%"
+    icon: "mdi:brightness-6"
+    entity_category: "config"
+  - platform: template
+    name: "LED Off Brightness"
+    id: button_off_brightness
+    min_value: 1
+    max_value: 100
+    initial_value: 15
+    step: 1
+    optimistic: True
+    restore_value: True
+    unit_of_measurement: "%"
+    icon: "mdi:brightness-6"
+    entity_category: "config"
+
 # ================================================================================================
 #                                BINARY SENSORS
 # ================================================================================================
@@ -343,7 +373,8 @@ select:
       - Left
       - Right
       - Both
-    initial_option: Right
+    initial_option: Both
+    entity_category: "config"
   
   - platform: template
     name: "LED Off Side"
@@ -351,10 +382,11 @@ select:
     optimistic: True
     restore_value: True
     options:
-      - left
-      - right
-      - both
-    initial_option: right
+      - Left
+      - Right
+      - Both
+    initial_option: Both
+    entity_category: "config"
 # ==============================================================================================================
 #                                           LIGHTS
 # ==============================================================================================================
@@ -464,6 +496,7 @@ light:
     name: "Nightlight"
     id: leds_nightlight
     internal: False
+    icon: "mdi:weather-night"
     default_transition_length: 0.2s
     segments:
       - id: leds
@@ -655,13 +688,13 @@ script:
           then:
             - light.turn_on:
                 id: leds_button_1_left
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
             - light.turn_on:
                 id: leds_button_1_right
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
@@ -671,7 +704,7 @@ script:
           then:
             - light.turn_on:
                 id: leds_button_1_left
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
@@ -681,7 +714,7 @@ script:
           then:
             - light.turn_on:
                 id: leds_button_1_right
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
@@ -695,13 +728,13 @@ script:
           then:
             - light.turn_on:
                 id: leds_button_2_left
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
             - light.turn_on:
                 id: leds_button_2_right
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
@@ -711,7 +744,7 @@ script:
           then:
             - light.turn_on:
                 id: leds_button_2_left
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
@@ -721,7 +754,7 @@ script:
           then:
             - light.turn_on:
                 id: leds_button_2_right
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
@@ -736,13 +769,13 @@ script:
           then:
             - light.turn_on:
                 id: leds_button_3_left
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
             - light.turn_on:
                 id: leds_button_3_right
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
@@ -752,7 +785,7 @@ script:
           then:
             - light.turn_on:
                 id: leds_button_3_left
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
@@ -762,7 +795,7 @@ script:
           then:
             - light.turn_on:
                 id: leds_button_3_right
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
@@ -777,13 +810,13 @@ script:
           then:
             - light.turn_on:
                 id: leds_button_4_left
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
             - light.turn_on:
                 id: leds_button_4_right
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
@@ -793,7 +826,7 @@ script:
           then:
             - light.turn_on:
                 id: leds_button_4_left
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
@@ -803,7 +836,7 @@ script:
           then:
             - light.turn_on:
                 id: leds_button_4_right
-                brightness: ${button_brightness}
+                brightness: !lambda "return id(button_on_brightness).state/100.0;"
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
@@ -821,13 +854,13 @@ script:
                 then:
                   - light.turn_on:
                       id: leds_button_1_left
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
                   - light.turn_on:
                       id: leds_button_1_right
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
@@ -837,7 +870,7 @@ script:
                 then:
                   - light.turn_on:
                       id: leds_button_1_left
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
@@ -847,7 +880,7 @@ script:
                 then:
                   - light.turn_on:
                       id: leds_button_1_right
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
@@ -871,13 +904,13 @@ script:
                 then:
                   - light.turn_on:
                       id: leds_button_2_left
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
                   - light.turn_on:
                       id: leds_button_2_right
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
@@ -887,7 +920,7 @@ script:
                 then:
                   - light.turn_on:
                       id: leds_button_2_left
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
@@ -897,7 +930,7 @@ script:
                 then:
                   - light.turn_on:
                       id: leds_button_2_right
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
@@ -921,13 +954,13 @@ script:
                 then:
                   - light.turn_on:
                       id: leds_button_3_left
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
                   - light.turn_on:
                       id: leds_button_3_right
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
@@ -937,7 +970,7 @@ script:
                 then:
                   - light.turn_on:
                       id: leds_button_3_left
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
@@ -947,7 +980,7 @@ script:
                 then:
                   - light.turn_on:
                       id: leds_button_3_right
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
@@ -970,13 +1003,13 @@ script:
                 then:
                   - light.turn_on:
                       id: leds_button_4_left
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
                   - light.turn_on:
                       id: leds_button_4_right
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
@@ -986,7 +1019,7 @@ script:
                 then:
                   - light.turn_on:
                       id: leds_button_4_left
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
@@ -996,7 +1029,7 @@ script:
                 then:
                   - light.turn_on:
                       id: leds_button_4_right
-                      brightness: ${button_brightness}
+                      brightness: !lambda "return id(button_off_brightness).state/100.0;"
                       red: !lambda "return id(button_off_color)[0]/255.0;"
                       green: !lambda "return id(button_off_color)[1]/255.0;"
                       blue:  !lambda "return id(button_off_color)[2]/255.0;"
