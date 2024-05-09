@@ -373,6 +373,7 @@ select:
   - platform: template
     name: "LED On Side"
     id: led_lights_on_side
+    icon: "mdi:border-style"
     optimistic: True
     restore_value: True
     options:
@@ -388,6 +389,7 @@ select:
   - platform: template
     name: "LED Off Side"
     id: led_lights_off_side
+    icon: "mdi:border-style"
     optimistic: True
     restore_value: True
     options:
