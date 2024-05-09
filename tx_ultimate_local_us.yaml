@@ -159,6 +159,9 @@ number:
     unit_of_measurement: "%"
     icon: "mdi:brightness-6"
     entity_category: "config"
+    on_value: 
+      then:
+        - script.execute: refresh_led_default
   - platform: template
     name: "LED Off Brightness"
     id: button_off_brightness
@@ -171,6 +174,9 @@ number:
     unit_of_measurement: "%"
     icon: "mdi:brightness-6"
     entity_category: "config"
+    on_value: 
+      then:
+        - script.execute: refresh_led_default
 
 # ================================================================================================
 #                                BINARY SENSORS
