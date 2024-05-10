@@ -385,7 +385,7 @@ select:
     entity_category: "config"
     on_value: 
       then:
-        - script.execute: refresh_led_default
+        - script.execute: led_side_change
   
   - platform: template
     name: "LED Off Side"
@@ -401,7 +401,7 @@ select:
     entity_category: "config"
     on_value: 
       then:
-        - script.execute: refresh_led_default
+        - script.execute: led_side_change
 # ==============================================================================================================
 #                                           LIGHTS
 # ==============================================================================================================
@@ -517,6 +517,13 @@ light:
       - id: leds
         from: 0
         to: 31
+    effects: 
+      - pulse:
+          name: "Transition Pulse"
+          transition_length:
+            on_length: 1s
+            off_length: 500ms
+          update_interval: 1.5s
     on_turn_off: 
       then:
         - script.execute: refresh_led_default
@@ -654,6 +661,37 @@ script:
           blue:  !lambda "return id(nightlight_color)[2]/255.0;"
       - delay: 0.5s
       - light.turn_off: leds_nightlight
+  
+  - id: led_side_change
+    mode: restart
+    then:
+      - script.execute: turn_off_leds
+      - light.turn_on: 
+          id: leds_nightlight
+          effect: "Transition Pulse"
+      - delay: 1.5s
+      - light.turn_off: 
+          id: leds_nightlight
+          transition_length: 0s
+      - script.execute: led_off_button_1
+      - script.execute: led_off_button_2
+      - script.execute: led_off_button_3
+      - script.execute: led_off_button_4
+      - script.execute: refresh_led_default
+        
+
+  - id: turn_off_leds
+    mode: restart
+    then:
+      - light.turn_off: leds_button_1_left
+      - light.turn_off: leds_button_1_right
+      - light.turn_off: leds_button_2_left
+      - light.turn_off: leds_button_2_right
+      - light.turn_off: leds_button_3_left
+      - light.turn_off: leds_button_3_right
+      - light.turn_off: leds_button_4_left
+      - light.turn_off: leds_button_4_right
+         
           
   - id: refresh_led_default
     mode: restart
