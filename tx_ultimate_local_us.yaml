@@ -281,7 +281,7 @@ switch:
   # Switch for relay 1
   - platform: gpio
     id: relay_1
-    name: "${friendly_name} L1"
+    name: "Switch L1"
     pin: ${relay_1_pin}
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
@@ -294,7 +294,7 @@ switch:
   # Switch for relay 2
   - platform: gpio
     id: relay_2
-    name: "${friendly_name} L2"
+    name: "Switch L2"
     pin: ${relay_2_pin}
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
@@ -307,7 +307,7 @@ switch:
   # Switch for relay 3
   - platform: gpio
     id: relay_3
-    name: "${friendly_name} L3"
+    name: "Switch L3"
     pin: ${relay_3_pin}
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
@@ -320,7 +320,7 @@ switch:
   # Switch for relay 4
   - platform: gpio
     id: relay_4
-    name: "${friendly_name} L4"
+    name: "Switch L4"
     pin: ${relay_4_pin}
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
@@ -336,6 +336,7 @@ switch:
     pin: ${vibra_motor_pin}
     name: "${friendly_name} Vibration"
     restore_mode: ALWAYS_OFF
+    internal: True
     on_turn_on:
       - delay: ${vibra_time}
       - switch.turn_off: vibra
@@ -473,8 +474,8 @@ light:
     default_transition_length: 0.2s
     segments:
       - id: leds
-        from: 19
-        to: 19
+        from: 18
+        to: 18
   - platform: partition
     name: "LEDs Button 3 Right"
     id: leds_button_3_right
@@ -482,8 +483,8 @@ light:
     default_transition_length: 0.2s
     segments:
       - id: leds
-        from: 4
-        to: 4
+        from: 5
+        to: 5
 
   # partition for lights on button 4
   - platform: partition
@@ -493,8 +494,8 @@ light:
     default_transition_length: 0.2s
     segments:
       - id: leds
-        from: 17
-        to: 17
+        from: 16
+        to: 16
   - platform: partition
     name: "LEDs Button 4 Right"
     id: leds_button_4_right
@@ -502,8 +503,8 @@ light:
     default_transition_length: 0.2s
     segments:
       - id: leds
-        from: 6
-        to: 6
+        from: 7
+        to: 7
 
   # Partition for night light
   - platform: partition
@@ -538,7 +539,6 @@ light:
           name: "Rainbow"
           speed: 10
           width: 20
-
 
 media_player:
   - platform: i2s_audio
@@ -643,23 +643,21 @@ time:
   - platform: homeassistant
 
 script:
+  - id: refresh_nightlight
+    mode: restart
+    then: 
+      - light.turn_on:
+          id: leds_nightlight
+          brightness: "${nightlight_brightness}"
+          red: !lambda "return id(nightlight_color)[0]/255.0;"
+          green: !lambda "return id(nightlight_color)[1]/255.0;"
+          blue:  !lambda "return id(nightlight_color)[2]/255.0;"
+      - delay: 0.5s
+      - light.turn_off: leds_nightlight
+          
   - id: refresh_led_default
     mode: restart
     then:
-  #     - if:
-  #         condition:
-  #           lambda: "return False;"
-  #         then:
-  #           # - light.turn_on: 
-  #           #     id: leds_top
-  #           #     brightness: ${nightlight_brightness}
-  #           #     effect: "None"
-  #           - script.execute: led_on_nightlight
-          # else:
-            # - light.turn_off: 
-            #     id: leds_top
-            # - light.turn_off: leds_nightlight 
-
       - if:
           condition:
             lambda: "return (id(relay_1).state) ;"
@@ -692,7 +690,7 @@ script:
           else:
             - script.execute: led_off_button_4
   
-
+  
   - id: led_on_button_1
     mode: restart
     then:
@@ -732,6 +730,12 @@ script:
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
+            - light.turn_on:
+                id: leds_button_1_left
+                brightness: !lambda "return id(button_off_brightness).state/100.0;"
+                red: !lambda "return id(button_off_color)[0]/255.0;"
+                green: !lambda "return id(button_off_color)[1]/255.0;"
+                blue:  !lambda "return id(button_off_color)[2]/255.0;"
 
   - id: led_on_button_2
     mode: restart
@@ -762,6 +766,8 @@ script:
                 red: !lambda "return id(button_color)[0]/255.0;"
                 green: !lambda "return id(button_color)[1]/255.0;"
                 blue:  !lambda "return id(button_color)[2]/255.0;"
+            - light.turn_off:
+                id: leds_button_1_right
       - if:
           condition: # on lights Right option selected
             - lambda: 'return id(led_lights_on_side).state == "Right";'
