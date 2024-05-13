@@ -7,15 +7,12 @@ substitutions:
   vibra_time: 100ms
   button_on_time: 500ms
 
-  button_brightness: "0.2"
   button_color: "{153,255,153}"
-
-  button_off_brightness: "0.15"
   button_off_color: "{0,128,255}"
 
   nightlight: "on"
-  nightlight_brightness: "0.15"
-  nightlight_color: "{255,255,209}"
+  nightlight_brightness: "0.11"
+  nightlight_color: "{255,255,255}"
 
   latitude: "-26.703°"
   longitude: "27.808°"
@@ -96,7 +93,7 @@ esphome:
           id: long_press
           state: OFF
       - script.execute: refresh_led_default
-      # - script.execute: refresh_nightlight
+      - script.execute: refresh_nightlight
 
 
 external_components:
@@ -106,7 +103,49 @@ external_components:
       url: https://github.com/NeillHerbst/sonoff-tx-ultimate-for-esphome
       ref: main
     components: [tx_ultimate_touch]
-    
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+#  hardware_uart: UART2
+  level: DEBUG
+  logs:
+    binary_sensor: INFO
+    light: INFO
+    script: INFO
+    switch: INFO
+    tx_ultimate_touch: INFO
+    uart_debug: INFO
+
+api:
+  encryption:
+    key: !secret bedroom_tx5_api_key
+
+ota:
+  password: !secret bedroom_tx5_ota_key
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: NONE
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Main Bedroom TX5 Fallback HS"
+    password: !secret bedroom_tx5_fallback_pass
+
+  manual_ip:
+    static_ip: !secret bedroom_tx5_ip
+    gateway: !secret bedroom_tx5_gateway
+    subnet: !secret bedroom_tx5_subnet
+
+improv_serial:
+
+captive_portal:
+
 
 globals:
   - id: nightlight_color
@@ -385,7 +424,8 @@ select:
     entity_category: "config"
     on_value: 
       then:
-        - script.execute: led_side_change
+        - script.execute: turn_off_leds
+        - script.execute: refresh_led_default
   
   - platform: template
     name: "LED Off Side"
@@ -401,7 +441,8 @@ select:
     entity_category: "config"
     on_value: 
       then:
-        - script.execute: led_side_change
+        - script.execute: turn_off_leds
+        - script.execute: refresh_led_default
 # ==============================================================================================================
 #                                           LIGHTS
 # ==============================================================================================================
@@ -515,8 +556,11 @@ light:
     default_transition_length: 0.2s
     segments:
       - id: leds
-        from: 0
-        to: 31
+        from: 25
+        to: 30
+      - id: leds
+        from: 9
+        to: 13
     effects: 
       - pulse:
           name: "Transition Pulse"
@@ -534,11 +578,8 @@ light:
     internal: true
     segments:
       - id: leds
-        from: 31
-        to: 31
-      - id: leds
-        from: 0
-        to: 8
+        from: 25
+        to: 30
     effects:
       - addressable_scan:
           name: "Scan"
@@ -584,7 +625,6 @@ tx_ultimate_touch:
   uart: my_uart
 
   on_press:
-    - script.execute: led_on_touch
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_press", "Touch Position: %d / State: %d", touch.x, touch.state);
 
@@ -666,13 +706,6 @@ script:
     mode: restart
     then:
       - script.execute: turn_off_leds
-      - light.turn_on: 
-          id: leds_nightlight
-          effect: "Transition Pulse"
-      - delay: 1.5s
-      - light.turn_off: 
-          id: leds_nightlight
-          transition_length: 0s
       - script.execute: led_off_button_1
       - script.execute: led_off_button_2
       - script.execute: led_off_button_3
@@ -709,7 +742,7 @@ script:
             lambda: "return id(relay_2).state;"
           then:
             - script.execute: led_on_button_2
-          else:
+          else: 
             - script.execute: led_off_button_2
       
       - if:
@@ -719,6 +752,7 @@ script:
             - script.execute: led_on_button_3
           else:
             - script.execute: led_off_button_3
+          
       
       - if:
           condition:
@@ -727,6 +761,12 @@ script:
             - script.execute: led_on_button_4
           else:
             - script.execute: led_off_button_4
+      - if:
+          condition:
+            - light.is_on: leds_nightlight
+          then:
+            - light.turn_on: leds_nightlight
+
   
   
   - id: led_on_button_1
@@ -1108,24 +1148,6 @@ script:
           green: !lambda "return id(nightlight_color)[1]/255.0;"
           blue:  !lambda "return id(nightlight_color)[2]/255.0;"
 
-  - id: led_on_release
-    mode: restart
-    then:
-      - light.turn_off:
-          id: leds_top
-
-  - id: led_on_touch
-    mode: restart
-    then:
-      # - light.turn_on:
-      #     id: leds_top
-      #     brightness: ${touch_brightness}
-      #     red: !lambda "return id(touch_color)[0]/255.0;"
-      #     green: !lambda "return id(touch_color)[1]/255.0;"
-      #     blue:  !lambda "return id(touch_color)[2]/255.0;"
-      #     effect: "None"
-      - delay: 6s
-      - script.execute: refresh_led_default
 
   - id: led_on_swipe_up
     mode: restart
@@ -1137,6 +1159,8 @@ script:
           green: !lambda "return id(swipe_up_color)[1]/255.0;"
           blue:  !lambda "return id(swipe_up_color)[2]/255.0;"
           effect: ${swipe_left_effect}
+      - delay: 2s
+      - light.turn_off: leds_top
 
   - id: led_on_swipe_down
     mode: restart
@@ -1148,6 +1172,8 @@ script:
           green: !lambda "return id(swipe_down_color)[1]/255.0;"
           blue:  !lambda "return id(swipe_down_color)[2]/255.0;"
           effect: ${swipe_down_effect}
+      - delay: 2s
+      - light.turn_off: leds_top
 
   - id: led_on_full_touch
     mode: restart
@@ -1159,6 +1185,8 @@ script:
           green: !lambda "return id(multi_touch_color)[1]/255.0;"
           blue:  !lambda "return id(multi_touch_color)[2]/255.0;"
           effect: ${multi_touch_effect}
+      - delay: 2s
+      - light.turn_off: leds_top
 
 
   - id: led_on_long_touch
@@ -1171,6 +1199,8 @@ script:
           green: !lambda "return id(long_press_color)[1]/255.0;"
           blue:  !lambda "return id(long_press_color)[2]/255.0;"
           effect: ${long_press_effect}
+      - delay: 2s
+      - light.turn_off: leds_top
 
 
   - id: handle_release
